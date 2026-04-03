@@ -7,8 +7,7 @@ import com.example.ute.singleton.VendingMachine;
 import com.example.ute.strategy.EWalletPayment;
 import com.example.ute.strategy.StudentCardPayment;
 
-//TIP To <b>Run</b> code, press <shortcut actionId="Run"/> or
-// click the <icon src="AllIcons.Actions.Execute"/> icon in the gutter.
+
 public class Main {
     public static void main(String[] args) {
         ProductFactory factory = new ProductFactory();
