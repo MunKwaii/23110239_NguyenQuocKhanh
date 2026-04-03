@@ -1,0 +1,100 @@
+@startuml
+skinparam classAttributeIconSize 0
+
+' --- Pattern 1: Factory Method (Sản phẩm) ---
+abstract class Product {
+    - String id
+    - String name
+    - double price
+    + double getPrice()
+    + String getName()
+}
+class Tea { 
+    + double getPrice() 
+}
+class SoftDrink { 
+    + double getPrice() 
+}
+class MineralWater { 
+    + double getPrice() 
+}
+
+class ProductFactory {
+    + Product createProduct(String type)
+}
+
+' --- Pattern 2: Observer (Thông báo hết hàng) ---
+interface InventoryObserver {
+    + update(Product p, int currentStock)
+}
+class AdminNotificationService {
+    + update(Product p, int currentStock)
+}
+
+class InventoryManager {
+    - Map<Product, Integer> stockMap
+    - List<InventoryObserver> observers
+    + addObserver(InventoryObserver o)
+    + boolean checkStock(Product p)
+    + reduceStock(Product p)
+    - notifyLowStock(Product p)
+}
+
+' --- Pattern 3: State (Trạng thái máy) ---
+interface VendingMachineState {
+    + selectProduct(VendingMachine vm, Product p)
+    + insertMoney(VendingMachine vm, double amount)
+    + dispense(VendingMachine vm)
+}
+class ReadyState { }
+class ProcessingPaymentState { }
+class DispensingState { }
+class OutOfStockState { }
+
+' --- Pattern 4: Strategy (Thanh toán) ---
+interface PaymentStrategy {
+    + boolean pay(double amount)
+}
+class CashPayment { }
+class StudentCardPayment { }
+class EWalletPayment { }
+
+' --- Pattern 5: Singleton (Điều khiển máy) ---
+class VendingMachine {
+    - {static} VendingMachine instance
+    - VendingMachineState currentState
+    - PaymentStrategy paymentStrategy
+    - InventoryManager inventory
+    - Product selectedProduct
+    - double currentBalance
+    + {static} VendingMachine getInstance()
+    + displayProducts()
+    + setState(VendingMachineState s)
+    + setPaymentStrategy(PaymentStrategy ps)
+    + executePayment()
+}
+
+' --- Relationships ---
+Product <|-- Tea
+Product <|-- SoftDrink
+Product <|-- MineralWater
+ProductFactory ..> Product : creates
+
+InventoryManager "1" o-- "*" Product : manages
+InventoryManager "1" o-- "*" InventoryObserver : notifies
+InventoryObserver <|.. AdminNotificationService
+
+VendingMachine "1" *-- "1" InventoryManager : "contains"
+VendingMachine "1" *-- "1" VendingMachineState : "current state"
+VendingMachine "1" o-- "1" PaymentStrategy : "uses for payment"
+
+VendingMachineState <|.. ReadyState
+VendingMachineState <|.. ProcessingPaymentState
+VendingMachineState <|.. DispensingState
+VendingMachineState <|.. OutOfStockState
+
+PaymentStrategy <|.. CashPayment
+PaymentStrategy <|.. StudentCardPayment
+PaymentStrategy <|.. EWalletPayment
+
+@enduml
